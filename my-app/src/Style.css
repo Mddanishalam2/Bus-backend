@@ -1,0 +1,20 @@
+/*custom.css */
+@keyframes moveBus {
+  0% {
+    transform: translateX(0); /* Start from the left */
+  }
+  50% {
+    transform: translateX(100vw); /* Move to the middle */
+  }
+  
+  100% {
+    transform: translateX(0); /* Complete the full loop by coming back */
+  }
+}
+
+.animate-moveBus {
+  animation: moveBus 50s ease-in-out infinite; /* Repeat the animation */
+  position: absolute; /* Ensure the element is positioned absolutely */
+  bottom: 10px; /* Position bus near the bottom */
+  left: 0; /* Start at the left side */
+}
