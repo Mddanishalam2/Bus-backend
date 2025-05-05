@@ -9,7 +9,7 @@ app.use(express.json());
 const DATA_FILE = 'location.json';
 
 // Receive GPS data from Arduino
-app.post('/update-location', (req, res) => {
+app.post('https://bus-backend-vnxc.onrender.com/update-location', (req, res) => {
     const { latitude, longitude } = req.body;
     console.log("Received data:", latitude, longitude);
     if (!latitude || !longitude) return res.status(400).send('Invalid data');
