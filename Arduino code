@@ -1,0 +1,66 @@
+#include <SoftwareSerial.h>
+SoftwareSerial gsm(10, 11); // RX, TX
+
+String latitude = "30.7333";
+String longitude = "76.7794";
+
+void setup() {
+  gsm.begin(9600);
+  Serial.begin(9600);
+  delay(2000);
+
+  sendToServer(latitude, longitude);
+}
+
+void loop() {
+  sendToServer(latitude, longitude); // Send GPS coordinates
+  delay(5000); // Wait for 5 seconds before sending again
+}
+
+void sendToServer(String lat, String lng) {
+  String url = "https://bus-backend-vnxc.onrender.com/update-location";
+  String payload = "{\"latitude\":\"" + lat + "\",\"longitude\":\"" + lng + "\"}";
+
+  Serial.println("Preparing to send data to server...");
+  
+  gsm.println("AT+HTTPTERM");         // Terminate any previous session
+  delay(1000);
+  gsm.println("AT+HTTPINIT");         // Initialize HTTP
+  delay(1000);
+  gsm.println("AT+HTTPPARA=\"CID\",1");
+  delay(1000);
+  gsm.println("AT+HTTPPARA=\"URL\",\"" + url + "\"");
+  delay(1000);
+  gsm.println("AT+HTTPPARA=\"CONTENT\",\"application/json\"");
+  delay(1000);
+  gsm.println("AT+HTTPDATA=" + String(payload.length()) + ",10000");
+  delay(1000);
+  gsm.print(payload);
+  delay(3000);
+
+  gsm.println("AT+HTTPACTION=1"); // 1 = POST
+  delay(6000);
+
+  // Read the result
+  gsm.println("AT+HTTPREAD");
+  delay(2000);
+
+  // Read and print GSM response to Serial Monitor
+  while (gsm.available()) {
+    String response = gsm.readString();
+    Serial.println(response);
+    
+    if (response.indexOf("OK") != -1 || response.indexOf("+HTTPACTION: 1,200") != -1) {
+      Serial.println("Location data successfully sent to backend!");
+      Serial.print("Latitude: ");
+      Serial.print(lat);
+      Serial.print(", Longitude: ");
+      Serial.println(lng);
+    }
+    else if (response.indexOf("ERROR") != -1) {
+      Serial.println("Failed to send location data.");
+    }
+  }
+
+  gsm.println("AT+HTTPTERM"); // Clean up
+}
