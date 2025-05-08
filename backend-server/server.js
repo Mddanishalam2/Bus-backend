@@ -11,7 +11,7 @@ app.use(express.json());
 const DATA_FILE = 'location.json';
 
 app.use((req, res, next)=>{
-    console.log(req.url);
+    console.log("url hit ----", req.url);
     next()
 })
 
