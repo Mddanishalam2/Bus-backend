@@ -3,10 +3,19 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "*",
+}));
 app.use(express.json());
 
 const DATA_FILE = 'location.json';
+
+app.use((req, res, next)=>{
+    console.log(req.url);
+    next()
+})
+
+
 
 // Receive GPS data from Arduino
 app.post('/update-location', (req, res) => {
